@@ -38,13 +38,13 @@ public class VehicleController {
         // Your logic to handle notifications
     }
 
-    @PostMapping("/subscribe")
-    public void subscribeToVehicle(@RequestParam String sessionId, @RequestParam String vehicleId) {
+    @PutMapping("/subscribe")
+    public void subscribeToVehicle(@SessionId String sessionId, @RequestParam String vehicleId) {
         vehicleService.subscribeToVehicle(sessionId, vehicleId);
     }
 
-    @PostMapping("/unsubscribe")
-    public void unsubscribeFromVehicle(@RequestParam String sessionId, @RequestParam String vehicleId) {
+    @PutMapping("/unsubscribe")
+    public void unsubscribeFromVehicle(@SessionId String sessionId, @RequestParam String vehicleId) {
         vehicleService.unsubscribeFromVehicle(sessionId, vehicleId);
     }
 

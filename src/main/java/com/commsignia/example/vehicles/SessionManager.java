@@ -17,6 +17,18 @@ public class SessionManager extends OncePerRequestFilter {
 
     private static final String SESSION_COOKIE_NAME = "sessionId";
 
+    public static String getSessionIdFromCookies(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (SESSION_COOKIE_NAME.equals(cookie.getName())) {
+                    return cookie.getValue();
+                }
+            }
+        }
+        return null;
+    }
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
@@ -32,18 +44,6 @@ public class SessionManager extends OncePerRequestFilter {
         request.setAttribute("sessionId", sessionId);
         // Proceed with the filter chain
         filterChain.doFilter(request, response);
-    }
-
-    private String getSessionIdFromCookies(HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                if (SESSION_COOKIE_NAME.equals(cookie.getName())) {
-                    return cookie.getValue();
-                }
-            }
-        }
-        return null;
     }
 
     private void addSessionIdToCookies(String sessionId, HttpServletResponse response) {
