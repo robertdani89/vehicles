@@ -1,5 +1,6 @@
 package com.commsignia.example.vehicles;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.commsignia.example.vehicles.models.Vehicle;
@@ -12,6 +13,9 @@ import java.util.Map;
 public class VehicleService {
 
     private Map<String, Vehicle> registeredVehicles = new HashMap<>();
+
+    @Autowired
+    private VehicleSubscriptionManager subscriptionManager;
 
     public ArrayList<Vehicle> queryVehiclesInCircle(double latitude, double longitude, double radius) {
         // This is a placeholder implementation. Replace it with your actual logic.
@@ -33,6 +37,14 @@ public class VehicleService {
             vehicle.setLatitude(latitude);
             vehicle.setLongitude(longitude);
         }
+    }
+
+    public void subscribeToVehicle(String sessionId, String vehicleId) {
+        subscriptionManager.subscribe(sessionId, vehicleId);
+    }
+
+    public void unsubscribeFromVehicle(String sessionId, String vehicleId) {
+        subscriptionManager.unsubscribe(sessionId, vehicleId);
     }
 
     private String generateUniqueId() {
