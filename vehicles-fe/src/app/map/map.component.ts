@@ -1,7 +1,8 @@
 import { AfterViewInit, Component } from '@angular/core';
 import * as L from 'leaflet';
+import { Subject, takeUntil } from 'rxjs';
 import { VehiclesService } from '../services/vehicles.service';
-import { WebSocketService } from '../services/websocket.service';
+import { MessageType, WebSocketService } from '../services/websocket.service';
 
 @Component({
   selector: 'app-map',
@@ -13,6 +14,8 @@ export class MapComponent implements AfterViewInit {
   public notifications = 0;
 
   private markers: { [key: string]: L.Marker } = {};
+  private $ondestroy = new Subject();
+
   constructor(
     private readonly webSocketService: WebSocketService,
     private readonly vehicleService: VehiclesService
@@ -21,9 +24,18 @@ export class MapComponent implements AfterViewInit {
   ngAfterViewInit(): void {
     this.initMap();
     this.getVehicles();
-    this.webSocketService.event.subscribe((body) => {
-      this.updateMarker(body.id, body.latitude, body.longitude);
-    });
+    this.webSocketService.event
+      .pipe(takeUntil(this.$ondestroy))
+      .subscribe(({ type, id, data }) => {
+        switch (type) {
+          case MessageType.position:
+            this.updateMarkerPosition(id, data.latitude, data.longitude);
+            break;
+          case MessageType.notification:
+            this.updateMarkerNotification(id, data);
+            break;
+        }
+      });
   }
 
   private initMap(): void {
@@ -45,6 +57,7 @@ export class MapComponent implements AfterViewInit {
     tiles.addTo(this.map);
   }
 
+  //TODO: move behind a modal and pick vehicles one by one
   private async getVehicles() {
     const res = await this.vehicleService.queryVehiclesInCircle(0, 0, 10000);
 
@@ -53,7 +66,7 @@ export class MapComponent implements AfterViewInit {
     });
   }
 
-  private updateMarker(id: string, lat: number, long: number) {
+  private updateMarkerPosition(id: string, lat: number, long: number) {
     if (!this.markers[id]) {
       const marker = new L.Marker(new L.LatLng(lat, long), {
         icon: new L.Icon({
@@ -62,11 +75,22 @@ export class MapComponent implements AfterViewInit {
           iconUrl: 'https://www.svgrepo.com/show/25407/car.svg',
         }),
         title: id,
-      } as L.MarkerOptions);
+      });
+
       this.markers[id] = marker;
       marker.addTo(this.map);
     } else {
       this.markers[id].setLatLng(new L.LatLng(lat, long));
     }
+  }
+
+  private updateMarkerNotification(id: string, message: string) {
+    if (!this.markers[id]) {
+      return;
+    }
+    this.markers[id].bindTooltip(message, {
+      permanent: true,
+      direction: 'right',
+    });
   }
 }

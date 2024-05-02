@@ -39,13 +39,13 @@ public class VehicleService {
             Vehicle vehicle = registeredVehicles.get(id);
             vehicle.setLatitude(latitude);
             vehicle.setLongitude(longitude);
-            webSocketService.sendToTopic(id, vehicle);
+            webSocketService.sendToTopic("vehicles/" + id + "/pos", vehicle);
         }
     }
 
     public void createNotification(String id, String message) {
         if (registeredVehicles.containsKey(id)) {
-            webSocketService.sendToTopic(id, message);
+            webSocketService.sendToTopic("vehicles/" + id + "/not", message);
         }
     }
 

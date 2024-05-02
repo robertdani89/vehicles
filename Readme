@@ -1,0 +1,48 @@
+# Vehicle Tracking System
+
+This is a vehicle tracking system application built with Angular for the frontend and Java Spring Boot for the backend.
+
+## How to Run
+
+### Prerequisites
+
+- Node.js (https://nodejs.org/) installed on your machine
+- Java Development Kit (JDK) (https://www.oracle.com/java/technologies/javase-jdk11-downloads.html) installed on your machine
+- Python installed on your machine
+
+### Frontend
+
+1. Navigate to the `vehicles-fe` directory.
+   ```
+   cd vehicles-fe
+   ```
+2. Install dependencies.
+   ```
+   npm install
+   ```
+3. Build the frontend.
+   ```
+   npm run build
+   ```
+
+### Backend
+
+1. Navigate to the `backend` directory.
+2. Run the Spring Boot application.
+   ```
+   ./mvnw spring-boot:run
+   ```
+
+### Simulator
+
+1. Navigate to the python simulator
+   ```
+   cd vehicles
+   . venv/bin/activate
+    python vehicles.py 127.0.0.1 9123 --num 5 --lat 47.2587316 --lon 19.3208951
+   ```
+
+### Open in Browser
+
+1. Open your web browser.
+2. Go to `http://localhost:8080` to access the application.

@@ -1,12 +1,18 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { StompRService, StompConfig } from '@stomp/ng2-stompjs';
 import SockJS from 'sockjs-client';
-import { Subject, Subscription, takeUntil } from 'rxjs';
+import { merge, of, Subject, Subscription, switchMap, takeUntil } from 'rxjs';
+
+export enum MessageType {
+  position = 'position',
+  notification = 'notification',
+}
 
 @Injectable()
 export class WebSocketService implements OnDestroy {
   private subs: { [key: string]: Subscription } = {};
   private $ondestroy = new Subject();
+
   public event = new Subject<any>();
 
   constructor(private stompService: StompRService) {
@@ -18,10 +24,34 @@ export class WebSocketService implements OnDestroy {
   }
 
   subscribe(vehicleId: string) {
-    const sub = this.stompService
-      .subscribe(`/topic/${vehicleId}`)
+    const position = this.stompService
+      .subscribe(`/topic/vehicles/${vehicleId}/pos`)
+      .pipe(
+        takeUntil(this.$ondestroy),
+        switchMap(({ body }) =>
+          of({
+            type: MessageType.position,
+            id: vehicleId,
+            data: JSON.parse(body),
+          })
+        )
+      );
+
+    const notification = this.stompService
+      .subscribe(`/topic/vehicles/${vehicleId}/not`)
+      .pipe(
+        takeUntil(this.$ondestroy),
+        switchMap(({ body }) =>
+          of({ type: MessageType.notification, id: vehicleId, data: body })
+        )
+      );
+
+    const sub = merge(position, notification)
       .pipe(takeUntil(this.$ondestroy))
-      .subscribe(({ body }) => this.event.next(JSON.parse(body)));
+      .subscribe((event) => {
+        this.event.next(event);
+      });
+
     this.subs[vehicleId] = sub;
   }
 

@@ -8,7 +8,7 @@ public class CreateNotificationDTO {
         return vehicle_id;
     }
 
-    public void setVehicleId(String vehicle_id) {
+    public void setVehicle_id(String vehicle_id) {
         this.vehicle_id = vehicle_id;
     }
 

@@ -110,7 +110,7 @@ public class VehicleControllerTests {
 
         // Mock data
         CreateNotificationDTO dto = new CreateNotificationDTO();
-        dto.setVehicleId(vehicleId);
+        dto.setVehicle_id(vehicleId);
         dto.setMessage(message);
 
         // Perform the request
