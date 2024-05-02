@@ -1,0 +1,16 @@
+header {
+  height: 40px;
+  // background-color: white;
+  position: relative;
+
+  img {
+    height: 100%;
+    position: absolute;
+    right: 0;
+    padding: 0;
+    margin: 0;
+    margin-right: 15px;
+    filter: invert(100%);
+    cursor: pointer;
+  }
+}
