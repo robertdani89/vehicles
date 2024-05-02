@@ -1,8 +1,10 @@
 package com.commsignia.example.vehicles;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.commsignia.example.vehicles.models.Vehicle;
+import com.commsignia.example.vehicles.models.VehiclesResponseDTO;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,19 +13,22 @@ import java.util.Map;
 @Service
 public class VehicleService {
 
+    @Autowired
+    private WebSocketService webSocketService;
+
     private Map<String, Vehicle> registeredVehicles = new HashMap<>();
 
-    public ArrayList<Vehicle> queryVehiclesInCircle(double latitude, double longitude, double radius) {
+    public VehiclesResponseDTO queryVehiclesInCircle(double latitude, double longitude, double radius) {
         // This is a placeholder implementation. Replace it with your actual logic.
         // For now, we'll return an empty list.
-        return new ArrayList<Vehicle>(registeredVehicles.values());
+        return new VehiclesResponseDTO(new ArrayList<Vehicle>(registeredVehicles.values()));
     }
 
-    public String registerVehicle() {
+    public Vehicle registerVehicle() {
         String vehicleId = generateUniqueId();
         Vehicle vehicle = new Vehicle(vehicleId);
         registeredVehicles.put(vehicleId, vehicle);
-        return vehicleId;
+        return vehicle;
     }
 
     public void updateVehiclePosition(String id, double latitude, double longitude) {
@@ -32,6 +37,13 @@ public class VehicleService {
             Vehicle vehicle = registeredVehicles.get(id);
             vehicle.setLatitude(latitude);
             vehicle.setLongitude(longitude);
+            webSocketService.sendToTopic(id, vehicle);
+        }
+    }
+
+    public void createNotification(String id, String message) {
+        if (registeredVehicles.containsKey(id)) {
+            webSocketService.sendToTopic(id, message);
         }
     }
 

@@ -7,6 +7,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import com.commsignia.example.vehicles.models.Vehicle;
+import com.commsignia.example.vehicles.models.VehiclesResponseDTO;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,11 +41,11 @@ public class VehicleServiceTests {
         when(registeredVehicles.values()).thenReturn(expectedVehicles);
 
         // Invoke the method
-        List<Vehicle> result = vehicleService.queryVehiclesInCircle(latitude, longitude, radius);
+        VehiclesResponseDTO result = vehicleService.queryVehiclesInCircle(latitude, longitude, radius);
 
         // Verify behavior
         verify(registeredVehicles).values();
-        assertEquals(expectedVehicles, result);
+        assertEquals(expectedVehicles, result.getVehicles());
     }
 
     @Test
