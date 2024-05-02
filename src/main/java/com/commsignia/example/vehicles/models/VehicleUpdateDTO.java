@@ -4,7 +4,6 @@ public class VehicleUpdateDTO {
     private double latitude;
     private double longitude;
 
-    // Getters and setters
     public double getLatitude() {
         return latitude;
     }

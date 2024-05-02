@@ -21,6 +21,9 @@ public class VehicleServiceTests {
     @Mock
     private Map<String, Vehicle> registeredVehicles;
 
+    @Mock
+    private WebSocketService webSocketService;
+
     @InjectMocks
     private VehicleService vehicleService;
 

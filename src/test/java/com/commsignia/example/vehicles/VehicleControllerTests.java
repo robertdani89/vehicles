@@ -8,10 +8,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import com.commsignia.example.vehicles.models.CreateNotificationDTO;
 import com.commsignia.example.vehicles.models.Vehicle;
+import com.commsignia.example.vehicles.models.VehicleUpdateDTO;
 import com.commsignia.example.vehicles.models.VehiclesResponseDTO;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.ArrayList;
 
@@ -60,22 +64,23 @@ public class VehicleControllerTests {
                 .param("longitude", "0.0")
                 .param("radius", "10"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$[0].id").value("1"))
-                .andExpect(jsonPath("$[1].id").value("2"));
+                .andExpect(jsonPath("$.vehicles").isArray())
+                .andExpect(jsonPath("$.vehicles[0].id").value("1"))
+                .andExpect(jsonPath("$.vehicles[1].id").value("2"));
     }
 
-    // @Test
-    // public void testRegisterVehicle() throws Exception {
-    // // Mock the behavior of the service method
-    // String expectedId = "generated_id";
-    // when(vehicleService.registerVehicle()).thenReturn(expectedId);
+    @Test
+    public void testRegisterVehicle() throws Exception {
+        // Mock the behavior of the service method
+        String expectedId = "generated_id";
+        Vehicle example = new Vehicle(expectedId);
+        when(vehicleService.registerVehicle()).thenReturn(example);
 
-    // // Perform the request and verify the response
-    // mockMvc.perform(post("/vehicles"))
-    // .andExpect(status().isOk())
-    // .andExpect(content().string(expectedId));
-    // }
+        // Perform the request and verify the response
+        mockMvc.perform(post("/vehicles"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(new ObjectMapper().writeValueAsString(example)));
+    }
 
     @Test
     public void testUpdateVehiclePosition() throws Exception {
@@ -84,10 +89,14 @@ public class VehicleControllerTests {
         double latitude = 0.0;
         double longitude = 0.0;
 
+        VehicleUpdateDTO dto = new VehicleUpdateDTO();
+        dto.setLatitude(longitude);
+        dto.setLongitude(longitude);
+
         // Perform the request
         mockMvc.perform(post("/vehicle/{id}", vehicleId)
-                .param("latitude", String.valueOf(latitude))
-                .param("longitude", String.valueOf(longitude)))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsString(dto)))
                 .andExpect(status().isOk());
 
         // Verify that the service method is called with the correct arguments
@@ -96,14 +105,18 @@ public class VehicleControllerTests {
 
     @Test
     public void testCreateNotification() throws Exception {
-        // Mock data
         String vehicleId = "test_vehicle_id";
         String message = "Test notification message";
 
+        // Mock data
+        CreateNotificationDTO dto = new CreateNotificationDTO();
+        dto.setVehicleId(vehicleId);
+        dto.setMessage(message);
+
         // Perform the request
         mockMvc.perform(post("/notifications")
-                .param("vehicle_id", vehicleId)
-                .param("message", message))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsString(dto)))
                 .andExpect(status().isOk());
     }
 }

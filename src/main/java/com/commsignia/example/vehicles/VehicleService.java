@@ -6,9 +6,10 @@ import org.springframework.stereotype.Service;
 import com.commsignia.example.vehicles.models.Vehicle;
 import com.commsignia.example.vehicles.models.VehiclesResponseDTO;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class VehicleService {
@@ -19,9 +20,10 @@ public class VehicleService {
     private Map<String, Vehicle> registeredVehicles = new HashMap<>();
 
     public VehiclesResponseDTO queryVehiclesInCircle(double latitude, double longitude, double radius) {
-        // This is a placeholder implementation. Replace it with your actual logic.
-        // For now, we'll return an empty list.
-        return new VehiclesResponseDTO(new ArrayList<Vehicle>(registeredVehicles.values()));
+        List<Vehicle> vehicles = registeredVehicles.values().stream()
+                .filter(v -> Utils.calculateDistance(latitude, longitude, v.getLatitude(), v.getLongitude()) < radius)
+                .collect(Collectors.toList());
+        return new VehiclesResponseDTO(vehicles);
     }
 
     public Vehicle registerVehicle() {
@@ -50,4 +52,5 @@ public class VehicleService {
     private String generateUniqueId() {
         return "V" + System.currentTimeMillis(); // Using timestamp as ID
     }
+
 }

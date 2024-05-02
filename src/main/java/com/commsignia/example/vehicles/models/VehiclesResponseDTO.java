@@ -5,11 +5,13 @@ import java.util.List;
 public class VehiclesResponseDTO {
     private List<Vehicle> vehicles;
 
+    public VehiclesResponseDTO() {
+    }
+
     public VehiclesResponseDTO(List<Vehicle> vehicles) {
         this.vehicles = vehicles;
     }
 
-    // Getters and setters
     public List<Vehicle> getVehicles() {
         return vehicles;
     }

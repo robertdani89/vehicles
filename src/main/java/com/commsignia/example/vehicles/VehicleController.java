@@ -29,7 +29,6 @@ public class VehicleController {
     @PostMapping("/vehicle/{id}")
     public void updateVehiclePosition(@PathVariable String id, @RequestBody VehicleUpdateDTO body) {
         vehicleService.updateVehiclePosition(id, body.getLatitude(), body.getLongitude());
-
     }
 
     @PostMapping("/notifications")
